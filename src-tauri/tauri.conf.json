@@ -27,7 +27,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.codegongbing.tauri",
+      "identifier": "cn.codegongbing.serial",
       "targets": "all"
     },
     "security": {
@@ -41,8 +41,8 @@
         "fullscreen": false,
         "resizable": true,
         "title": "波特率动",
-        "width": 1000,
-        "height": 900
+        "width": 1450,
+        "height": 850
       }
     ]
   }
