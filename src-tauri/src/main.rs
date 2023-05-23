@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod serial;
-use serialport::{self, DataBits, FlowControl, Parity, StopBits};
+use serialport::{self, DataBits, FlowControl, Parity, SerialPortBuilder, StopBits};
 use std::sync::Mutex;
 use tauri::Window;
 
@@ -17,6 +17,14 @@ lazy_static! {
     static ref PARITY: Mutex<Parity> = Mutex::new(Parity::None);
     static ref STOP_BITS: Mutex<StopBits> = Mutex::new(StopBits::One);
     static ref TIMEOUT: Mutex<u64> = Mutex::new(1000);
+    static ref SERIAL_PORT_BUILDER: Mutex<SerialPortBuilder> = Mutex::new(
+        serialport::new(&*SERIAL_PORT.lock().unwrap(), *BAUD_RATE.lock().unwrap())
+            .data_bits(*DATA_BITS.lock().unwrap())
+            .flow_control(*FLOW_CONTROL.lock().unwrap())
+            .parity(*PARITY.lock().unwrap())
+            .stop_bits(*STOP_BITS.lock().unwrap())
+            .timeout(std::time::Duration::from_millis(*TIMEOUT.lock().unwrap()))
+    );
 }
 
 // the payload type must implement `Serialize` and `Clone`.
@@ -42,14 +50,16 @@ fn get_serial_process(window: Window) {
 fn set_serial_settings(data: SerialSettingsData) {
     *BAUD_RATE.lock().unwrap() = data.baud_rate;
     *DATA_BITS.lock().unwrap() = match data.data_bits {
+        5 => DataBits::Five,
+        6 => DataBits::Six,
         7 => DataBits::Seven,
         8 => DataBits::Eight,
         _ => DataBits::Eight,
     };
     *PARITY.lock().unwrap() = match data.check_bit.as_str() {
-        "None" => Parity::None,
-        "Odd" => Parity::Odd,
-        "Even" => Parity::Even,
+        "none" => Parity::None,
+        "odd" => Parity::Odd,
+        "even" => Parity::Even,
         _ => Parity::None,
     };
     *STOP_BITS.lock().unwrap() = match data.stop_bits {
@@ -57,13 +67,19 @@ fn set_serial_settings(data: SerialSettingsData) {
         2 => StopBits::Two,
         _ => StopBits::One,
     };
-    *TIMEOUT.lock().unwrap() = 3000;
 }
 
 // 选择串口
 #[tauri::command]
 fn choose_serial(serial: String) {
     *SERIAL_PORT.lock().unwrap() = serial;
+    *SERIAL_PORT_BUILDER.lock().unwrap() =
+        serialport::new(&*SERIAL_PORT.lock().unwrap(), *BAUD_RATE.lock().unwrap())
+            .data_bits(*DATA_BITS.lock().unwrap())
+            .flow_control(*FLOW_CONTROL.lock().unwrap())
+            .parity(*PARITY.lock().unwrap())
+            .stop_bits(*STOP_BITS.lock().unwrap())
+            .timeout(std::time::Duration::from_millis(*TIMEOUT.lock().unwrap()));
 }
 
 fn main() {
