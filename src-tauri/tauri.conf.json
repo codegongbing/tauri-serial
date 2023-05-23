@@ -42,7 +42,8 @@
         "resizable": true,
         "title": "波特率动",
         "width": 1450,
-        "height": 850
+        "height": 880,
+        "center": true
       }
     ]
   }

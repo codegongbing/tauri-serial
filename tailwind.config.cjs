@@ -6,8 +6,16 @@ module.exports = {
     "./src/**/*.vue"
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'dark-primary-color': '#28303C',
+        'dark-color': '#A5ADBB',
+        'dark-hover-color': '#262727',
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    require("daisyui")
+  ],
 }
 

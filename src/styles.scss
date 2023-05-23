@@ -1,0 +1,18 @@
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: #fff;
+    cursor: url('@/assets/normal_black_cat.cur'), auto;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #29303C;
+    color: #A5ADBB;
+    cursor: url('@/assets/normal_simple.cur'), auto;
+
+    .el-button {
+      cursor: url('@/assets/link.cur'), auto;
+    }
+  }
+}

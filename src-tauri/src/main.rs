@@ -5,28 +5,42 @@ mod serial;
 use tauri::Window;
 
 // the payload type must implement `Serialize` and `Clone`.
-#[derive(Clone, serde::Serialize)]
-struct Payload {
-    message: String,
+#[derive(Clone, serde::Serialize, serde::Deserialize, Debug)]
+struct SerialSettingsData {
+    baud_rate: u32,
+    data_bits: u8,
+    check_bit: String,
+    stop_bits: u8,
 }
 
+// 向前端发送串口信息
 #[tauri::command]
 fn get_serial_process(window: Window) {
     std::thread::spawn(move || loop {
         window.emit("serial-port", serial::get_serial()).unwrap();
-        std::thread::sleep(std::time::Duration::from_millis(100));
+        std::thread::sleep(std::time::Duration::from_millis(500));
     });
 }
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+// 获取前端串口设置
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+fn set_serial_settings(data: SerialSettingsData) {
+    println!("data: {:?}",&data);
+
+}
+
+#[tauri::command]
+fn choose_serial(serial: String) {
+    println!("serial: {}", serial);
 }
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, get_serial_process])
+        .invoke_handler(tauri::generate_handler![
+            get_serial_process,
+            set_serial_settings,
+            choose_serial
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

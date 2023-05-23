@@ -1,24 +1,25 @@
 <script setup lang="ts">
-import { invoke } from '@tauri-apps/api/tauri';
-import { once } from '@tauri-apps/api/event';
-
-const getSerialProcess = async () => {
-  await invoke('get_serial_process')
-  await once('serial-port', (event: any) => {
-    console.log(event);
-  })
-}
-onMounted(() => {
-})
-
+import SerialSider from '@/components/SerialSider.vue';
+import SerialOutPut from '@/components/SerialOutput.vue';
+import SerialInput from '@/components/SerialInput.vue';
 </script>
 
 <template>
-  <div class="h-screen w-full">
-    <div class="h-100 w-100">
-      <button class="bg-gray-300" @click="getSerialProcess">点击获取serial</button>
-    </div>
+
+  <div class="flex flex-col h-screen w-screen">
+    <!--    <el-container class="container aspect-video flex flex-nowrap relative">-->
+    <el-container class="p-5 h-screen flex flex-nowrap relative w-screen">
+      <SerialSider></SerialSider>
+      <div class="w-7"></div>
+      <el-container class="flex flex-col flex-grow basis-3/4">
+        <SerialOutPut></SerialOutPut>
+        <div class="h-10">
+        </div>
+        <SerialInput></SerialInput>
+      </el-container>
+    </el-container>
+    <div class="h-10"> aaa</div>
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss"></style>
