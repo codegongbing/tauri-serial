@@ -172,6 +172,8 @@ const setSerialSettings = async () => {
       @apply rounded-md bg-dark-primary-color text-gray-400;
     }
 
+
+    // 下拉时边框
     :deep(.el-input.is-focus .el-input__wrapper) {
       box-shadow: 0 0 0 3px #DCDFE5 !important;
     }

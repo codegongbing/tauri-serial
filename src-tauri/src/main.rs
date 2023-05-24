@@ -16,14 +16,14 @@ lazy_static! {
     static ref FLOW_CONTROL: Mutex<FlowControl> = Mutex::new(FlowControl::None);
     static ref PARITY: Mutex<Parity> = Mutex::new(Parity::None);
     static ref STOP_BITS: Mutex<StopBits> = Mutex::new(StopBits::One);
-    static ref TIMEOUT: Mutex<u64> = Mutex::new(1000);
+    // static ref TIMEOUT: Mutex<u64> = Mutex::new(1000);
     static ref SERIAL_PORT_BUILDER: Mutex<SerialPortBuilder> = Mutex::new(
         serialport::new(&*SERIAL_PORT.lock().unwrap(), *BAUD_RATE.lock().unwrap())
             .data_bits(*DATA_BITS.lock().unwrap())
             .flow_control(*FLOW_CONTROL.lock().unwrap())
             .parity(*PARITY.lock().unwrap())
             .stop_bits(*STOP_BITS.lock().unwrap())
-            .timeout(std::time::Duration::from_millis(*TIMEOUT.lock().unwrap()))
+            // .timeout(std::time::Duration::from_millis(*TIMEOUT.lock().unwrap()))
     );
 }
 
@@ -41,7 +41,7 @@ struct SerialSettingsData {
 fn get_serial_process(window: Window) {
     std::thread::spawn(move || loop {
         window.emit("serial-port", serial::get_serial()).unwrap();
-        std::thread::sleep(std::time::Duration::from_millis(500));
+        std::thread::sleep(std::time::Duration::from_millis(1000));
     });
 }
 
@@ -79,7 +79,7 @@ fn choose_serial(serial: String) {
             .flow_control(*FLOW_CONTROL.lock().unwrap())
             .parity(*PARITY.lock().unwrap())
             .stop_bits(*STOP_BITS.lock().unwrap())
-            .timeout(std::time::Duration::from_millis(*TIMEOUT.lock().unwrap()));
+    // .timeout(std::time::Duration::from_millis(*TIMEOUT.lock().unwrap()));
 }
 
 fn main() {
