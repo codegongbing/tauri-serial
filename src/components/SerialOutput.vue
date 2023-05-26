@@ -6,6 +6,14 @@ import { log, time } from 'console';
 const outputStore = useOutputStore();
 
 const outputPanel = ref<HTMLElement | null>(null);
+const rightChat = ref<HTMLElement | null>(null);
+const leftChat = ref<HTMLElement | null>(null);
+
+const test = () => {
+    // 获取元素值
+    console.log(rightChat);
+    
+}
 
 const scrollToBottom = () => {
     if (outputPanel.value !== null) {
@@ -58,9 +66,9 @@ onMounted(() => {
                             class="duration-1000">
                             str
                         </span>
-                        <span @click="hexToStr(index)" v-else>hex</span>
+                        <span ref="rightChat" @click="hexToStr(index)" v-else>hex</span>
                     </div>
-                    <time class="ml-1 text-xs opacity-50">
+                    <time @click="test" class="ml-1 text-xs opacity-50">
                         {{ "时间:" + record.time }}
                     </time>
                     <div data-tip="点击在str与hex中切换" class="tooltip chat-header-encoding ml-2" v-if="record.type === 'output'">
