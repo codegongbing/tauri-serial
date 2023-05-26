@@ -53,7 +53,7 @@ onMounted(() => {
         <template v-for="(record, index) in outputStore.get" :key="index">
             <div class="chat" :class="record.type === 'output' ? 'chat-start' : 'chat-end'">
                 <div class="chat-header flex items-center">
-                    <div class="chat-header-encoding mr-2" v-if="record.type === 'input'">
+                    <div data-tip="点击在str与hex中切换" class="tooltip chat-header-encoding mr-2" v-if="record.type === 'input'">
                         <span @click="strToHex(index)" v-if="outputStore.getEncoding(index) === 'str'"
                             class="duration-1000">
                             str
@@ -63,7 +63,7 @@ onMounted(() => {
                     <time class="ml-1 text-xs opacity-50">
                         {{ "时间:" + record.time }}
                     </time>
-                    <div class="chat-header-encoding ml-2" v-if="record.type === 'output'">
+                    <div data-tip="点击在str与hex中切换" class="tooltip chat-header-encoding ml-2" v-if="record.type === 'output'">
                         <span @click="strToHex(index)" v-if="outputStore.getEncoding(index) === 'str'"
                             class="duration-1000">
                             str
