@@ -5,11 +5,17 @@ import router, { setupRouter } from "./router";
 import './plugins/tailwindcss/tailwind.css'
 import './styles.scss'
 
+// declare global {
+//     interface Window {
+//         __TAURI__: any;
+//     }
+// }
+
 async function projectStart() {
-    // 如果系统为mac，设置缩放125%
-    // if (/macintosh|mac os x/i.test(navigator.userAgent)) {
-    //     document.body.style.cssText = 'zoom: 1.25;'
-    // }
+    // @ts-ignore
+    if (window.__TAURI__) {
+        document.body.style.cssText = 'zoom: 1.25;'
+    }
     const app = createApp(App)
     setupPlugins(app)
     setupRouter(app)

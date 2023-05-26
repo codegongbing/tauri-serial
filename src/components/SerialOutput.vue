@@ -11,8 +11,7 @@ const leftChat = ref<HTMLElement | null>(null);
 
 const test = () => {
     // 获取元素值
-    console.log(rightChat);
-    
+
 }
 
 const scrollToBottom = () => {
@@ -68,7 +67,7 @@ onMounted(() => {
                         </span>
                         <span ref="rightChat" @click="hexToStr(index)" v-else>hex</span>
                     </div>
-                    <time @click="test" class="ml-1 text-xs opacity-50">
+                    <time class="ml-1 text-xs opacity-50">
                         {{ "时间:" + record.time }}
                     </time>
                     <div data-tip="点击在str与hex中切换" class="tooltip chat-header-encoding ml-2" v-if="record.type === 'output'">

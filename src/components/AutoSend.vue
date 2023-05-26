@@ -9,6 +9,10 @@ const props = defineProps({
     }
 })
 
+defineExpose({
+    toggleAutoSend
+})
+
 
 const autoSendRef = ref();
 const isHovered = useElementHover(autoSendRef);
@@ -69,9 +73,10 @@ const btnState = () => {
 </script>
 
 <template>
-    <div class="dropdown dropdown-top dropdown-end dropdown-hover" ref="autoSendRef">
+    <div class="dropdown dropdown-top dropdown-end" :class="props.inputRecord === '' ? '' : 'dropdown-hover'"
+        ref="autoSendRef">
         <button class="btn btn-sm mb-1 mr-2 px-7" :class="btnState()" @click="toggleAutoSend">
-            {{ content }}
+            {{ props.inputRecord === '' ? '自动发送' : content }}
         </button>
         <ul tabindex="0" class="dropdown-content p-3 shadow bg-base-200 rounded-box">
             <!-- 填写自动发送时间 与开始按钮 -->
