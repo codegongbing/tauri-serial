@@ -1,3 +1,8 @@
+@font-face {
+  font-family: FiraNerdFontMono;
+  src: url('@/assets/fonts/FiraCodeNerdFontMono-Regular.ttf');
+}
+
 @media (prefers-color-scheme: light) {
   body {
     background-color: #fff;
@@ -7,6 +12,7 @@
 
 @media (prefers-color-scheme: dark) {
   body {
+    font-family: FiraNerdFontMono;
     background-color: #29303C;
     color: #A5ADBB;
     cursor: url('@/assets/normal_simple.cur'), auto;

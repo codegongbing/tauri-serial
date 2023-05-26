@@ -5,7 +5,7 @@ import SerialInput from '@/components/SerialInput.vue';
 </script>
 
 <template>
-  <div class="flex h-screen w-screen">
+  <div class="flex flex-col h-screen w-screen">
     <!--    <el-container class="container aspect-video flex flex-nowrap relative">-->
     <el-container class="p-5 h-screen flex flex-nowrap relative w-screen">
       <SerialSider class=""></SerialSider>

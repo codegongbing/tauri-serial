@@ -1,20 +1,16 @@
-// const useOutputStore = defineStore('output', {
-//     state: () => ({ records: [] as string[] }),
-//     getters: {
-//         get: (state) => state.records,
-//     },
-//     actions: {
-//         increment(record: string) {
-//             this.records.push(record)
-//         }
-//     }
-// })
+interface OutputData {
+    type: string
+    encoding: string
+    time: string
+    data: string
+}
 
 export const useOutputStore = defineStore('output', () => {
-    const records = ref([] as string[])
-    const get = computed(() => records.value)
-    const recordLength = computed(() => records.value.length)
-    const clear = () => records.value = []
-    const addRecord = (record: string) => records.value.push(record)
-    return { records, get, recordLength, clear, addRecord }
+    const outputRecords = ref([] as OutputData[])
+    const get = computed(() => outputRecords.value)
+    const getEncoding = (index: number) => outputRecords.value[index].encoding
+    const outputRecordLength = computed(() => outputRecords.value.length)
+    const clear = () => outputRecords.value = []
+    const addRecord = (record: OutputData) => outputRecords.value.push(record)
+    return { outputRecords, get, getEncoding, outputRecordLength, clear, addRecord }
 })

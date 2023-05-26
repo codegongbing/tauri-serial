@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { useOutputStore } from '@/store/useOutputStore';
-import { time } from 'console';
+import { log, time } from 'console';
 
 const outputStore = useOutputStore();
 
@@ -12,20 +12,25 @@ const scrollToBottom = () => {
         outputPanel.value.scrollTop = outputPanel.value.scrollHeight;
     }
 }
-watch(() => outputStore.recordLength, () => {
+watch(() => outputStore.outputRecordLength, () => {
     setTimeout(() => scrollToBottom(), 0)
 })
 
-const test = () => {
-    //判断outputStore.get是否为[]
-    if (outputStore.get.length === 0) {
 
-    }
-    outputStore.addRecord("测试数据");
-    outputStore.addRecord("测试数据");
-    outputStore.addRecord("测试数据");
-    outputStore.addRecord("测试数据");
+const strToHex = (index: number) => {
+    const hexData = outputStore.get[index].data.split('').map((item) => {
+        return "0x" + item.charCodeAt(0).toString(16).toUpperCase()
+    }).join(', ')
+    outputStore.outputRecords[index].data = hexData
+    outputStore.outputRecords[index].encoding = "hex"
+}
 
+const hexToStr = (index: number) => {
+    const strData = outputStore.get[index].data.split(' ').map((item) => {
+        return String.fromCharCode(parseInt(item, 16))
+    }).join('')
+    outputStore.outputRecords[index].data = strData
+    outputStore.outputRecords[index].encoding = "str"
 }
 
 const getNowTime = () => {
@@ -33,19 +38,42 @@ const getNowTime = () => {
     return now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds()
 }
 
+onMounted(() => {
+    outputStore.addRecord({ type: "output", encoding: "str", time: getNowTime(), data: "hhh" });
+    outputStore.addRecord({ type: "output", encoding: "str", time: getNowTime(), data: "测试数据" });
+    outputStore.addRecord({ type: "output", encoding: "str", time: getNowTime(), data: "测试数据" });
+    outputStore.addRecord({ type: "input", encoding: "str", time: getNowTime(), data: "测试数据" });
+    outputStore.addRecord({ type: "input", encoding: "str", time: getNowTime(), data: "测试数据" });
+})
+
 </script>
 
 <template>
-    <div ref="outputPanel" @click="test" class="output-board">
-        <div v-for="(record, index) in outputStore.get" :key="index" class="chat chat-start">
-            <div class="chat-header flex items-center">
-                <button class="ml-4">这里应该放串口名称</button>
-                <time class="ml-4 text-xs opacity-50">
-                    {{ "时间:" + getNowTime() }}
-                </time>
+    <div ref="outputPanel" class="output-board">
+        <template v-for="(record, index) in outputStore.get" :key="index">
+            <div class="chat" :class="record.type === 'output' ? 'chat-start' : 'chat-end'">
+                <div class="chat-header flex items-center">
+                    <div class="chat-header-encoding mr-2" v-if="record.type === 'input'">
+                        <span @click="strToHex(index)" v-if="outputStore.getEncoding(index) === 'str'"
+                            class="duration-1000">
+                            str
+                        </span>
+                        <span @click="hexToStr(index)" v-else>hex</span>
+                    </div>
+                    <time class="ml-1 text-xs opacity-50">
+                        {{ "时间:" + record.time }}
+                    </time>
+                    <div class="chat-header-encoding ml-2" v-if="record.type === 'output'">
+                        <span @click="strToHex(index)" v-if="outputStore.getEncoding(index) === 'str'"
+                            class="duration-1000">
+                            str
+                        </span>
+                        <span @click="hexToStr(index)" v-else>hex</span>
+                    </div>
+                </div>
+                <div class="chat-bubble">{{ record.data }}</div>
             </div>
-            <div class="chat-bubble">{{ record }}</div>
-        </div>
+        </template>
     </div>
 </template>
 
@@ -77,12 +105,12 @@ const getNowTime = () => {
 @media (prefers-color-scheme: dark) {
     .output-board {
 
-        // :deep(.el-scrollbar__wrap){
-        //     overflow-y: hidden;
-        // }
-
         @apply border-gray-400
     }
 
+}
+
+.chat-header-encoding {
+    cursor: url('@/assets/link.cur'), auto;
 }
 </style>
