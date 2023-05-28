@@ -5,22 +5,26 @@ import router, { setupRouter } from "./router";
 import './plugins/tailwindcss/tailwind.css'
 import './styles.scss'
 
-// declare global {
-//     interface Window {
-//         __TAURI__: any;
+// @ts-ignore
+if (window.__TAURI__) {
+    document.body.style.cssText = 'zoom: 1.25;'
+}
+const app = createApp(App)
+setupPlugins(app)
+setupRouter(app)
+app.mount('#app')
+
+// tauri不支持top-level await，暂时删除异步启动
+// async function projectStart() {
+//     // @ts-ignore
+//     if (window.__TAURI__) {
+//         document.body.style.cssText = 'zoom: 1.25;'
 //     }
+//     const app = createApp(App)
+//     setupPlugins(app)
+//     setupRouter(app)
+//     await router.isReady()
+//     app.mount('#app')
 // }
 
-async function projectStart() {
-    // @ts-ignore
-    if (window.__TAURI__) {
-        document.body.style.cssText = 'zoom: 1.25;'
-    }
-    const app = createApp(App)
-    setupPlugins(app)
-    setupRouter(app)
-    await router.isReady()
-    app.mount('#app')
-}
-
-await projectStart()
+// await projectStart()
