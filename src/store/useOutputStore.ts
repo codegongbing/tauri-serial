@@ -5,12 +5,18 @@ interface OutputData {
     data: string
 }
 
+interface emitData {
+    data: string,
+    is_close: boolean
+}
+
 export const useOutputStore = defineStore('output', () => {
+    const emitData = ref({ data: '', is_close: false } as emitData)
     const outputRecords = ref([] as OutputData[])
     const get = computed(() => outputRecords.value)
     const getEncoding = (index: number) => outputRecords.value[index].encoding
     const outputRecordLength = computed(() => outputRecords.value.length)
     const clear = () => outputRecords.value = []
     const addRecord = (record: OutputData) => outputRecords.value.push(record)
-    return { outputRecords, get, getEncoding, outputRecordLength, clear, addRecord }
+    return { emitData, outputRecords, get, getEncoding, outputRecordLength, clear, addRecord }
 })

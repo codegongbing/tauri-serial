@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import { useOutputStore } from '@/store/useOutputStore';
-import { log, time } from 'console';
 
 const outputStore = useOutputStore();
 
@@ -45,20 +44,13 @@ const getNowTime = () => {
     return now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds()
 }
 
-onMounted(() => {
-    outputStore.addRecord({ type: "output", encoding: "str", time: getNowTime(), data: "hhh" });
-    outputStore.addRecord({ type: "output", encoding: "str", time: getNowTime(), data: "测试数据" });
-    outputStore.addRecord({ type: "output", encoding: "str", time: getNowTime(), data: "测试数据" });
-    outputStore.addRecord({ type: "input", encoding: "str", time: getNowTime(), data: "测试数据" });
-    outputStore.addRecord({ type: "input", encoding: "str", time: getNowTime(), data: "测试数据" });
-})
 
 </script>
 
 <template>
     <div ref="outputPanel" class="output-board">
         <template v-for="(record, index) in outputStore.get" :key="index">
-            <div class="chat" :class="record.type === 'output' ? 'chat-start' : 'chat-end'">
+            <div class="my-2 chat" :class="record.type === 'output' ? 'chat-start' : 'chat-end'">
                 <div class="chat-header flex items-center">
                     <div data-tip="点击在str与hex中切换" class="tooltip chat-header-encoding mr-2" v-if="record.type === 'input'">
                         <span @click="strToHex(index)" v-if="outputStore.getEncoding(index) === 'str'"

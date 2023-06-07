@@ -1,10 +1,13 @@
 <script setup lang="ts">
 
 import { baudRate, dataBits, checkBit, stopBits, siderData } from "@/types/settings-data";
-import { serialEventData, serialPayload } from "@/types/event-data";
+import { serialEventData, serialPayload, outputEvent } from "@/types/event-data";
 import { SerialInfo } from "@/types/serial-info";
 import { invoke } from '@tauri-apps/api/tauri';
-import { once } from '@tauri-apps/api/event';
+import { listen, once, UnlistenFn } from '@tauri-apps/api/event';
+import { useOutputStore } from '@/store/useOutputStore';
+
+const outputStore = useOutputStore();
 
 const baudRates = [
   { value: '115200', label: '波特率：115200' },
@@ -43,15 +46,18 @@ const dialogTableVisible = ref(false)
 const isConnected = ref(false)
 const serialInfo = ref([] as SerialInfo[])
 
+const getNowTime = () => {
+  const now = new Date()
+  return now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds()
+}
+
 const getSerialProcess = async () => {
   await invoke('get_serial_process')
   await once('serial-port', (event: serialEventData) => {
-    // console.log(event.payload);
     serialInfo.value = []
     event.payload.forEach((item: serialPayload) => {
       serialInfo.value.push({ index: item.id, name: item.port_name })
     })
-    // console.log(serialInfo)
   })
 }
 
@@ -63,6 +69,19 @@ const chooseSerial = async (index: number) => {
   const serial = serialInfo.value[index].name
 
   await invoke('choose_serial', { serial: serial })
+  let unlistenFn = await listen('output-data', (event: outputEvent) => {
+    outputStore.emitData = event.payload
+    if (outputStore.emitData.is_close) {
+      unlistenFn()
+    } else {
+      outputStore.addRecord({
+        type: "output",
+        encoding: "str",
+        time: getNowTime(),
+        data: outputStore.emitData.data,
+      })
+    }
+  })
 
   dialogTableVisible.value = false
   isConnected.value = true

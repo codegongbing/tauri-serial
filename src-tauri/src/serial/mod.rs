@@ -1,4 +1,5 @@
 pub mod init;
+pub mod static_value;
 
 use serde;
 

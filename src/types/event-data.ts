@@ -14,7 +14,20 @@ interface serialEventData {
     id: number,
 }
 
+interface outputEvent {
+    event: string,
+    windowLabel: string,
+    payload: emitData
+}
+
+interface emitData {
+    data: string,
+    is_close: boolean
+}
+
 export type {
     serialPayload,
     serialEventData,
+    outputEvent,
+    emitData
 }

@@ -3,27 +3,26 @@
 
 mod serial;
 use serialport::{self, DataBits, FlowControl, Parity, SerialPortBuilder, StopBits};
-use std::sync::Mutex;
+use std::{sync::Mutex, thread::spawn, time::Duration};
 use tauri::Window;
 
 #[macro_use]
 extern crate lazy_static;
 
 lazy_static! {
-    static ref SERIAL_PORT: Mutex<String> = Mutex::new(String::from("port"));
-    static ref BAUD_RATE: Mutex<u32> = Mutex::new(115200);
-    static ref DATA_BITS: Mutex<DataBits> = Mutex::new(DataBits::Eight);
-    static ref FLOW_CONTROL: Mutex<FlowControl> = Mutex::new(FlowControl::None);
-    static ref PARITY: Mutex<Parity> = Mutex::new(Parity::None);
-    static ref STOP_BITS: Mutex<StopBits> = Mutex::new(StopBits::One);
+    pub static ref SERIAL_PORT: Mutex<String> = Mutex::new(String::from(""));
+    pub static ref BAUD_RATE: Mutex<u32> = Mutex::new(115200);
+    pub static ref DATA_BITS: Mutex<DataBits> = Mutex::new(DataBits::Eight);
+    pub static ref FLOW_CONTROL: Mutex<FlowControl> = Mutex::new(FlowControl::None);
+    pub static ref PARITY: Mutex<Parity> = Mutex::new(Parity::None);
+    pub static ref STOP_BITS: Mutex<StopBits> = Mutex::new(StopBits::One);
     // static ref TIMEOUT: Mutex<u64> = Mutex::new(1000);
-    static ref SERIAL_PORT_BUILDER: Mutex<SerialPortBuilder> = Mutex::new(
+    pub static ref SERIAL_PORT_BUILDER: Mutex<SerialPortBuilder> = Mutex::new(
         serialport::new(&*SERIAL_PORT.lock().unwrap(), *BAUD_RATE.lock().unwrap())
             .data_bits(*DATA_BITS.lock().unwrap())
             .flow_control(*FLOW_CONTROL.lock().unwrap())
             .parity(*PARITY.lock().unwrap())
             .stop_bits(*STOP_BITS.lock().unwrap())
-            // .timeout(std::time::Duration::from_millis(*TIMEOUT.lock().unwrap()))
     );
 }
 
@@ -36,12 +35,17 @@ struct SerialSettingsData {
     stop_bits: u8,
 }
 
+#[derive(Clone, serde::Serialize, serde::Deserialize, Debug)]
+struct OutputData {
+    data: String,
+    is_close: bool,
+}
+
 // 向前端发送串口信息
 #[tauri::command]
 fn get_serial_process(window: Window) {
-    std::thread::spawn(move || loop {
+    std::thread::spawn(move || {
         window.emit("serial-port", serial::get_serial()).unwrap();
-        std::thread::sleep(std::time::Duration::from_millis(1000));
     });
 }
 
@@ -71,15 +75,54 @@ fn set_serial_settings(data: SerialSettingsData) {
 
 // 选择串口
 #[tauri::command]
-fn choose_serial(serial: String) {
+fn choose_serial(serial: String, window: Window) {
     *SERIAL_PORT.lock().unwrap() = serial;
-    *SERIAL_PORT_BUILDER.lock().unwrap() =
-        serialport::new(&*SERIAL_PORT.lock().unwrap(), *BAUD_RATE.lock().unwrap())
-            .data_bits(*DATA_BITS.lock().unwrap())
-            .flow_control(*FLOW_CONTROL.lock().unwrap())
-            .parity(*PARITY.lock().unwrap())
-            .stop_bits(*STOP_BITS.lock().unwrap())
-    // .timeout(std::time::Duration::from_millis(*TIMEOUT.lock().unwrap()));
+
+    let opened_port = SERIAL_PORT_BUILDER.lock().unwrap().clone().open();
+
+    match opened_port {
+        Ok(mut port) => {
+            spawn(move || loop {
+                println!("{:?}", &port);
+                match &port.data_bits() {
+                    Ok(_) => {}
+                    Err(e) => {
+                        println!("{}", e);
+                        let data = OutputData {
+                            data: "".to_string(),
+                            is_close: true,
+                        };
+                        window.emit("output-data", data).unwrap();
+                        return;
+                    }
+                }
+                // 打开串口
+                let mut serial_buf: Vec<u8> = vec![0; 10000];
+                let read_result = port.read(serial_buf.as_mut_slice());
+                match read_result {
+                    Ok(t) => {
+                        let serial_str = String::from_utf8(serial_buf[..t].to_vec());
+                        match serial_str {
+                            Ok(s) => {
+                                let data = OutputData {
+                                    data: s,
+                                    is_close: false,
+                                };
+                                window.emit("output-data", data).unwrap();
+                            }
+                            _ => {}
+                        }
+                    }
+                    _ => {}
+                }
+                std::thread::sleep(Duration::from_millis(50));
+            });
+        }
+        Err(e) => {
+            println!("{}", e);
+            return;
+        }
+    }
 }
 
 fn main() {

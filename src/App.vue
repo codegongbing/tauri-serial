@@ -1,7 +1,16 @@
 <script setup lang="ts">
-import SerialSider from '@/components/SerialSider.vue';
-import SerialOutPut from '@/components/SerialOutput.vue';
-import SerialInput from '@/components/SerialInput.vue';
+import SerialSider from "@/components/SerialSider.vue";
+import SerialOutPut from "@/components/SerialOutput.vue";
+import SerialControl from "@/components/SerialControl.vue";
+import SerialInput from "@/components/SerialInput.vue";
+
+const serialControlRef = ref();
+
+const serialOutputRef = ref();
+
+const test = () => {
+  serialControlRef.value.changeReadType();
+};
 </script>
 
 <template>
@@ -12,8 +21,7 @@ import SerialInput from '@/components/SerialInput.vue';
       <div class="w-7"></div>
       <div class="flex flex-col flex-grow basis-3/4">
         <SerialOutPut></SerialOutPut>
-        <div class="h-10">
-        </div>
+        <SerialControl ref="serialControlRef"></SerialControl>
         <SerialInput></SerialInput>
       </div>
     </div>
