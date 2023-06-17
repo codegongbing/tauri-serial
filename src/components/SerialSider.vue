@@ -4,7 +4,7 @@ import { baudRate, dataBits, checkBit, stopBits, siderData } from "@/types/setti
 import { serialEventData, serialPayload, outputEvent } from "@/types/event-data";
 import { SerialInfo } from "@/types/serial-info";
 import { invoke } from '@tauri-apps/api/tauri';
-import { listen, once, UnlistenFn } from '@tauri-apps/api/event';
+import { listen, once } from '@tauri-apps/api/event';
 import { useDataStore, useEncodingStore } from '@/stores';
 import Time from '@/utils/time';
 
@@ -45,19 +45,14 @@ const sideData = [
 ] as siderData[]
 
 const dialogTableVisible = ref(false)
+// 是否连接
 const isConnected = ref(false)
+// 连接是否断开
 const isPaused = ref(false)
+// 是否暂停接收
+const isSuspended = ref(false)
 const serialInfo = ref([] as SerialInfo[])
 const serialChoiceRef = ref()
-
-const test = () => {
-  // vue3获取serialChoiceRef元素的宽度
-  if (serialChoiceRef.value) {
-    const width = serialChoiceRef.value[0].clientWidth
-    console.log(width)
-  }
-
-}
 
 const getSerialProcess = async () => {
   await invoke('get_serial_process')
@@ -80,7 +75,7 @@ const chooseSerial = async (index: number) => {
   let unlistenFn = await listen('output-data', (event: outputEvent) => {
     if (!isPaused.value) {
       outputStore.emitData = event.payload
-      if (outputStore.emitData.is_close) {
+      if (outputStore.emitData.is_suspended) {
         unlistenFn()
       } else {
         outputStore.addRecord({
@@ -109,11 +104,16 @@ const setSerialSettings = async () => {
     check_bit: sideData[2].value.value,
     stop_bits: parseInt(sideData[3].value.value),
   }
-  invoke('set_serial_settings', { data: data });
+  await invoke('set_serial_settings', { data: data })
 }
 
-const closeSerial = async () => {
-  await invoke('close_serial')
+const closeOrReconnectSerial = async () => {
+  if (isSuspended.value === true) {
+    isSuspended.value = false
+  } else {
+    isSuspended.value = true
+  }
+  await invoke('close_or_reconnect_serial', { state: isSuspended.value })
 }
 
 </script>
@@ -139,7 +139,12 @@ const closeSerial = async () => {
           </el-select>
         </div>
       </div>
-      <button @click="test">aaa</button>
+      <button v-if="isConnected && !isSuspended" class="btn btn-error mt-4 suspend-btn" @click="closeOrReconnectSerial">
+        <span class="text-xs">断 开</span>
+      </button>
+      <button v-if="isConnected && isSuspended" class="btn mt-4 suspend-btn" @click="closeOrReconnectSerial">
+        <span class="text-xs">重 连</span>
+      </button>
       <!--   空白   -->
       <div class="flex-1"></div>
       <!--   底部   -->
@@ -265,6 +270,10 @@ const closeSerial = async () => {
   .serial-select {
     cursor: url('@/assets/link.cur'), auto;
     @apply bg-gray-700 text-gray-400 rounded-md p-2 m-2
+  }
+
+  .suspend-btn {
+    cursor: url('@/assets/link.cur'), auto !important;
   }
 
 }

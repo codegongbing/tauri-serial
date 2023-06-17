@@ -7,11 +7,11 @@ interface OutputData {
 
 interface emitData {
     data: string,
-    is_close: boolean
+    is_suspended: boolean
 }
 
 export const useDataStore = defineStore('output', () => {
-    const emitData = ref({ data: '', is_close: false } as emitData)
+    const emitData = ref({ data: '', is_suspended: false } as emitData)
     const dataRecords = ref([] as OutputData[])
     const get = computed(() => dataRecords.value)
     const getEncoding = (index: number) => dataRecords.value[index].encoding

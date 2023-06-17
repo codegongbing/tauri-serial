@@ -22,7 +22,7 @@ interface outputEvent {
 
 interface emitData {
     data: string,
-    is_close: boolean
+    is_suspended: boolean
 }
 
 export type {

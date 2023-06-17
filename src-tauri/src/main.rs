@@ -24,7 +24,7 @@ lazy_static! {
             .parity(*PARITY.lock().unwrap())
             .stop_bits(*STOP_BITS.lock().unwrap())
         );
-    pub static ref IS_CLOSE: Mutex<bool> = Mutex::new(false);
+    pub static ref IS_SUSPENDED: Mutex<bool> = Mutex::new(false);
     pub static ref IS_WRITE: Mutex<bool> = Mutex::new(false);
     pub static ref WRITE_DATA: Mutex<String> = Mutex::new(String::from(""));
 }
@@ -41,7 +41,7 @@ struct SerialSettingsData {
 #[derive(Clone, serde::Serialize, serde::Deserialize, Debug)]
 struct OutputData {
     data: String,
-    is_close: bool,
+    is_suspended: bool,
 }
 
 // 向前端发送串口信息
@@ -91,7 +91,7 @@ fn choose_serial(serial: String, window: Window) {
                     Err(_) => {
                         let data = OutputData {
                             data: "".to_string(),
-                            is_close: true,
+                            is_suspended: true,
                         };
                         window.emit("output-data", data).unwrap();
                         return;
@@ -99,19 +99,20 @@ fn choose_serial(serial: String, window: Window) {
                 }
                 // 判断是否写数据
                 if *IS_WRITE.lock().unwrap() == true {
-                    // 写入串口
-                    // String转&[u8]
-                    let write_result = port.write(WRITE_DATA.lock().unwrap().as_bytes());
-                    match write_result {
-                        Ok(r) => {
-                            println!("{}", r);
+                    if *IS_SUSPENDED.lock().unwrap() == false {
+                        // 写入串口
+                        let write_result = port.write(WRITE_DATA.lock().unwrap().as_bytes());
+                        match write_result {
+                            Ok(r) => {
+                                println!("{}", r);
+                            }
+                            Err(e) => {
+                                println!("{}", e);
+                            }
                         }
-                        Err(e) => {
-                            println!("{}", e);
-                        }
+                        *IS_WRITE.lock().unwrap() = false;
+                        *WRITE_DATA.lock().unwrap() = "".into();
                     }
-                    *IS_WRITE.lock().unwrap() = false;
-                    *WRITE_DATA.lock().unwrap() = "".into();
                 } else {
                     // 读取串口
                     let mut serial_buf: Vec<u8> = vec![0; 10000];
@@ -123,9 +124,11 @@ fn choose_serial(serial: String, window: Window) {
                                 Ok(s) => {
                                     let data = OutputData {
                                         data: s,
-                                        is_close: false,
+                                        is_suspended: false,
                                     };
-                                    window.emit("output-data", data).unwrap();
+                                    if *IS_SUSPENDED.lock().unwrap() == false {
+                                        window.emit("output-data", data).unwrap();
+                                    }
                                 }
                                 _ => {}
                             }
@@ -143,15 +146,14 @@ fn choose_serial(serial: String, window: Window) {
 }
 
 #[tauri::command]
-fn close_serial() {}
+fn close_or_reconnect_serial(state: bool) {
+    *IS_SUSPENDED.lock().unwrap() = state;
+}
 
 #[tauri::command]
 fn change_write(data: String) {
     *WRITE_DATA.lock().unwrap() = data;
-    println!("{:?}",&*WRITE_DATA.lock().unwrap());
     *IS_WRITE.lock().unwrap() = true;
-    println!("{:?}",&*IS_WRITE.lock().unwrap());
-
 }
 
 fn main() {
@@ -160,7 +162,7 @@ fn main() {
             get_serial_process,
             set_serial_settings,
             choose_serial,
-            close_serial,
+            close_or_reconnect_serial,
             change_write
         ])
         .run(tauri::generate_context!())
