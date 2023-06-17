@@ -5,34 +5,36 @@ import { serialEventData, serialPayload, outputEvent } from "@/types/event-data"
 import { SerialInfo } from "@/types/serial-info";
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen, once, UnlistenFn } from '@tauri-apps/api/event';
-import { useOutputStore } from '@/store/useOutputStore';
+import { useDataStore, useEncodingStore } from '@/stores';
+import Time from '@/utils/time';
 
-const outputStore = useOutputStore();
+const outputStore = useDataStore();
+const encodingStore = useEncodingStore();
 
 const baudRates = [
-  { value: '115200', label: '波特率：115200' },
-  { value: '57600', label: '波特率：57600' },
-  { value: '38400', label: '波特率：38400' },
-  { value: '19200', label: '波特率：19200' },
-  { value: '9600', label: '波特率：9600' },
+  { value: '115200', label: '波特率:115200' },
+  { value: '57600', label: '波特率:57600' },
+  { value: '38400', label: '波特率:38400' },
+  { value: '19200', label: '波特率:19200' },
+  { value: '9600', label: '波特率:9600' },
 ] as baudRate[]
 
 const dataBits = [
-  { value: '8', label: '数据位：8' },
-  { value: '7', label: '数据位：7' },
-  { value: '6', label: '数据位：6' },
-  { value: '5', label: '数据位：5' },
+  { value: '8', label: '数据位:8' },
+  { value: '7', label: '数据位:7' },
+  { value: '6', label: '数据位:6' },
+  { value: '5', label: '数据位:5' },
 ] as dataBits[]
 
 const checkBits = [
-  { value: 'none', label: '校验位：none' },
-  { value: 'even', label: '校验位：even' },
-  { value: 'odd', label: '校验位：odd' },
+  { value: 'none', label: '校验位:none' },
+  { value: 'even', label: '校验位:even' },
+  { value: 'odd', label: '校验位:odd' },
 ] as checkBit[]
 
 const stopBits = [
-  { value: '1', label: '停止位：1' },
-  { value: '2', label: '停止位：2' },
+  { value: '1', label: '停止位:1' },
+  { value: '2', label: '停止位:2' },
 ] as stopBits[]
 
 const sideData = [
@@ -44,11 +46,17 @@ const sideData = [
 
 const dialogTableVisible = ref(false)
 const isConnected = ref(false)
+const isPaused = ref(false)
 const serialInfo = ref([] as SerialInfo[])
+const serialChoiceRef = ref()
 
-const getNowTime = () => {
-  const now = new Date()
-  return now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds()
+const test = () => {
+  // vue3获取serialChoiceRef元素的宽度
+  if (serialChoiceRef.value) {
+    const width = serialChoiceRef.value[0].clientWidth
+    console.log(width)
+  }
+
 }
 
 const getSerialProcess = async () => {
@@ -70,31 +78,28 @@ const chooseSerial = async (index: number) => {
 
   await invoke('choose_serial', { serial: serial })
   let unlistenFn = await listen('output-data', (event: outputEvent) => {
-    outputStore.emitData = event.payload
-    if (outputStore.emitData.is_close) {
-      unlistenFn()
-    } else {
-      outputStore.addRecord({
-        type: "output",
-        encoding: "str",
-        time: getNowTime(),
-        data: outputStore.emitData.data,
-      })
+    if (!isPaused.value) {
+      outputStore.emitData = event.payload
+      if (outputStore.emitData.is_close) {
+        unlistenFn()
+      } else {
+        outputStore.addRecord({
+          type: "output",
+          encoding: encodingStore.encoding,
+          time: Time.getNowTime(),
+          data: outputStore.emitData.data,
+        })
+      }
     }
   })
-
   dialogTableVisible.value = false
   isConnected.value = true
-  // console.log(index);
-
 }
 
 // let isDark = ref(window.matchMedia('(prefers-color-scheme: dark)').matches)
 
 const setSerialSettings = async () => {
   dialogTableVisible.value = true
-
-  // console.log(serialInfo.value);
 
   await getSerialProcess()
   const data = {
@@ -105,6 +110,10 @@ const setSerialSettings = async () => {
     stop_bits: parseInt(sideData[3].value.value),
   }
   invoke('set_serial_settings', { data: data });
+}
+
+const closeSerial = async () => {
+  await invoke('close_serial')
 }
 
 </script>
@@ -122,7 +131,7 @@ const setSerialSettings = async () => {
           <span class="span-text">选择串口</span>
         </el-button>
         <!--    设置属性    -->
-        <div v-for="sd in sideData">
+        <div ref="serialChoiceRef" v-for="sd in sideData">
           <el-select class="w-full mt-4" :teleported="false" v-model="sd.value.value" size="large">
             <el-option class="option-disabled" disabled :value="'设置' + sd.name" />
             <el-option class="text-gray-400" v-for="data in sd.data" :key="data.value" :label="data.label"
@@ -130,6 +139,7 @@ const setSerialSettings = async () => {
           </el-select>
         </div>
       </div>
+      <button @click="test">aaa</button>
       <!--   空白   -->
       <div class="flex-1"></div>
       <!--   底部   -->

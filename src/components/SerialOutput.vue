@@ -1,8 +1,8 @@
 <script setup lang="ts">
 
-import { useOutputStore } from '@/store/useOutputStore';
+import { useDataStore } from '@/stores';
 
-const outputStore = useOutputStore();
+const outputStore = useDataStore();
 
 const outputPanel = ref<HTMLElement | null>(null);
 const rightChat = ref<HTMLElement | null>(null);
@@ -38,12 +38,6 @@ const hexToStr = (index: number) => {
     outputStore.outputRecords[index].data = strData
     outputStore.outputRecords[index].encoding = "str"
 }
-
-const getNowTime = () => {
-    const now = new Date()
-    return now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds()
-}
-
 
 </script>
 

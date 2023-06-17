@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { invoke } from '@tauri-apps/api/tauri';
 import AutoSend from '@/components/AutoSend.vue'
+import { useDataStore, useEncodingStore } from '@/stores';
+import Time from '@/utils/time';
 
+const outputStore = useDataStore()
+const encodingStore = useEncodingStore()
 const inputRecord = ref("")
 
 // 子组件
@@ -11,8 +16,14 @@ const clearContent = () => {
     autoSendRef.value.toggleAutoSend()
 }
 
-const send = () => {
-    console.log(inputRecord.value);
+const send = async () => {
+    outputStore.addRecord({
+        type: "input",
+        encoding: encodingStore.encoding,
+        time: Time.getNowTime(),
+        data: inputRecord.value,
+    })
+    await invoke('change_write', { data: inputRecord.value })
 }
 
 </script>

@@ -23,7 +23,10 @@ lazy_static! {
             .flow_control(*FLOW_CONTROL.lock().unwrap())
             .parity(*PARITY.lock().unwrap())
             .stop_bits(*STOP_BITS.lock().unwrap())
-    );
+        );
+    pub static ref IS_CLOSE: Mutex<bool> = Mutex::new(false);
+    pub static ref IS_WRITE: Mutex<bool> = Mutex::new(false);
+    pub static ref WRITE_DATA: Mutex<String> = Mutex::new(String::from(""));
 }
 
 // the payload type must implement `Serialize` and `Clone`.
@@ -83,11 +86,9 @@ fn choose_serial(serial: String, window: Window) {
     match opened_port {
         Ok(mut port) => {
             spawn(move || loop {
-                println!("{:?}", &port);
                 match &port.data_bits() {
                     Ok(_) => {}
-                    Err(e) => {
-                        println!("{}", e);
+                    Err(_) => {
                         let data = OutputData {
                             data: "".to_string(),
                             is_close: true,
@@ -96,33 +97,61 @@ fn choose_serial(serial: String, window: Window) {
                         return;
                     }
                 }
-                // 打开串口
-                let mut serial_buf: Vec<u8> = vec![0; 10000];
-                let read_result = port.read(serial_buf.as_mut_slice());
-                match read_result {
-                    Ok(t) => {
-                        let serial_str = String::from_utf8(serial_buf[..t].to_vec());
-                        match serial_str {
-                            Ok(s) => {
-                                let data = OutputData {
-                                    data: s,
-                                    is_close: false,
-                                };
-                                window.emit("output-data", data).unwrap();
-                            }
-                            _ => {}
+                // 判断是否写数据
+                if *IS_WRITE.lock().unwrap() == true {
+                    // 写入串口
+                    // String转&[u8]
+                    let write_result = port.write(WRITE_DATA.lock().unwrap().as_bytes());
+                    match write_result {
+                        Ok(r) => {
+                            println!("{}", r);
+                        }
+                        Err(e) => {
+                            println!("{}", e);
                         }
                     }
-                    _ => {}
+                    *IS_WRITE.lock().unwrap() = false;
+                    *WRITE_DATA.lock().unwrap() = "".into();
+                } else {
+                    // 读取串口
+                    let mut serial_buf: Vec<u8> = vec![0; 10000];
+                    let read_result = port.read(serial_buf.as_mut_slice());
+                    match read_result {
+                        Ok(t) => {
+                            let serial_str = String::from_utf8(serial_buf[..t].to_vec());
+                            match serial_str {
+                                Ok(s) => {
+                                    let data = OutputData {
+                                        data: s,
+                                        is_close: false,
+                                    };
+                                    window.emit("output-data", data).unwrap();
+                                }
+                                _ => {}
+                            }
+                        }
+                        _ => {}
+                    }
+                    std::thread::sleep(Duration::from_millis(50));
                 }
-                std::thread::sleep(Duration::from_millis(50));
             });
         }
-        Err(e) => {
-            println!("{}", e);
+        Err(_) => {
             return;
         }
     }
+}
+
+#[tauri::command]
+fn close_serial() {}
+
+#[tauri::command]
+fn change_write(data: String) {
+    *WRITE_DATA.lock().unwrap() = data;
+    println!("{:?}",&*WRITE_DATA.lock().unwrap());
+    *IS_WRITE.lock().unwrap() = true;
+    println!("{:?}",&*IS_WRITE.lock().unwrap());
+
 }
 
 fn main() {
@@ -130,7 +159,9 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_serial_process,
             set_serial_settings,
-            choose_serial
+            choose_serial,
+            close_serial,
+            change_write
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
