@@ -19,7 +19,7 @@ const clearContent = () => {
 const send = async () => {
     outputStore.addRecord({
         type: "input",
-        encoding: encodingStore.encoding,
+        encoding: encodingStore.writeEncoding,
         time: Time.getNowTime(),
         data: inputRecord.value,
     })

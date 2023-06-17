@@ -73,6 +73,7 @@ const chooseSerial = async (index: number) => {
 
   await invoke('choose_serial', { serial: serial })
   let unlistenFn = await listen('output-data', (event: outputEvent) => {
+    // 如果串口拔出，关闭监听
     if (!isPaused.value) {
       outputStore.emitData = event.payload
       if (outputStore.emitData.is_suspended) {
@@ -80,9 +81,11 @@ const chooseSerial = async (index: number) => {
       } else {
         outputStore.addRecord({
           type: "output",
-          encoding: encodingStore.encoding,
+          encoding: encodingStore.readEncoding,
           time: Time.getNowTime(),
-          data: outputStore.emitData.data,
+          data: encodingStore.readEncoding === 'hex' ? outputStore.emitData.data.split('').map((item) => {
+            return "0x" + item.charCodeAt(0).toString(16).toUpperCase()
+          }).join(', ') : outputStore.emitData.data,
         })
       }
     }
