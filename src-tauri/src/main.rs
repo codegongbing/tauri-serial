@@ -104,9 +104,7 @@ fn choose_serial(serial: String, window: Window) {
                         // 写入串口
                         let write_result = port.write(WRITE_DATA.lock().unwrap().as_bytes());
                         match write_result {
-                            Ok(r) => {
-                                println!("{}", r);
-                            }
+                            Ok(_) => {}
                             Err(e) => {
                                 println!("{}", e);
                             }

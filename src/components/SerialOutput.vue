@@ -1,17 +1,11 @@
 <script setup lang="ts">
 
-import { useDataStore } from '@/stores';
+import { useDataStore, useScrollStore } from '@/stores';
 
 const outputStore = useDataStore();
+const scrollStore = useScrollStore();
 
 const outputPanel = ref<HTMLElement | null>(null);
-const rightChat = ref<HTMLElement | null>(null);
-const leftChat = ref<HTMLElement | null>(null);
-
-const test = () => {
-    // 获取元素值
-
-}
 
 const scrollToBottom = () => {
     if (outputPanel.value !== null) {
@@ -19,7 +13,9 @@ const scrollToBottom = () => {
     }
 }
 watch(() => outputStore.outputRecordLength, () => {
-    setTimeout(() => scrollToBottom(), 0)
+    if (scrollStore.isScrolledToBottom) {
+        setTimeout(() => scrollToBottom(), 0)
+    }
 })
 
 
@@ -51,7 +47,7 @@ const hexToStr = (index: number) => {
                             class="duration-1000">
                             str
                         </span>
-                        <span ref="rightChat" @click="hexToStr(index)" v-else>hex</span>
+                        <span @click="hexToStr(index)" v-else>hex</span>
                     </div>
                     <time class="ml-1 text-xs opacity-50">
                         {{ "时间:" + record.time }}

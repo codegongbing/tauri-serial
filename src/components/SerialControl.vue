@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useDataStore, useEncodingStore } from '@/stores';
+import { useDataStore, useEncodingStore, useScrollStore } from '@/stores';
 const dataStore = useDataStore();
 const encodingStore = useEncodingStore();
-
-const isAutoScroll = ref(true);
+const scrollStore = useScrollStore();
 
 const changeReadEncoding = () => {
     console.log("changeReadType");
@@ -23,15 +22,15 @@ const changeWriteEncoding = () => {
 }
 
 const changeScrollState = () => {
-    isAutoScroll.value = !isAutoScroll.value
+    scrollStore.isScrolledToBottom = scrollStore.isScrolledToBottom ? false : true;
 }
 
 </script>
 
 <template>
     <div class="h-10 flex items-center justify-between">
-    <div class="">
-        <div class="tooltip ml-3" data-tip="点击切换接收格式">
+        <div class="">
+            <div class="tooltip ml-3" data-tip="点击切换接收格式">
                 <label class="btn-control h-6 swap badge badge-info badge-outline text-white text-center"
                     :class="encodingStore.readEncoding === 'str' ? ['swap-active', ' badge-warning'] : ['badge-info']"
                     @click="changeReadEncoding">
@@ -51,7 +50,8 @@ const changeScrollState = () => {
         <div class="mr-4">
             <div class="tooltip mr-4" data-tip="点击切换是否滚动">
                 <label class="btn-control h-6 swap badge badge-info badge-outline text-white text-center"
-                    :class="isAutoScroll ? ['swap-active', 'badge-info'] : ['badge-warning']" @click="changeScrollState">
+                    :class="scrollStore.isScrolledToBottom ? ['swap-active', 'badge-info'] : ['badge-warning']"
+                    @click="changeScrollState">
                     <div class="swap-on fill-current w-15 m-2">自动滚动</div>
                     <div class="swap-off fill-current w-15 m-2">不滚动</div>
                 </label>
