@@ -80,6 +80,7 @@ fn set_serial_settings(data: SerialSettingsData) {
 #[tauri::command]
 fn choose_serial(serial: String, window: Window) {
     *SERIAL_PORT.lock().unwrap() = serial;
+    *IS_SUSPENDED.lock().unwrap() = false;
 
     let opened_port = SERIAL_PORT_BUILDER.lock().unwrap().clone().open();
 

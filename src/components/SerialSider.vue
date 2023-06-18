@@ -92,6 +92,7 @@ const chooseSerial = async (index: number) => {
   })
   dialogTableVisible.value = false
   isConnected.value = true
+  isSuspended.value = false
 }
 
 // let isDark = ref(window.matchMedia('(prefers-color-scheme: dark)').matches)
