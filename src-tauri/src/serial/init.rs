@@ -1,4 +1,4 @@
-use super::SerialInfo;
+use super::types::SerialInfo;
 use serialport::SerialPortType;
 
 pub fn get() -> Vec<SerialInfo> {
