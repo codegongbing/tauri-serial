@@ -85,9 +85,10 @@ const clear = () => {
 </template>
 
 <style lang="scss" scoped>
-@media (prefers-color-scheme: dark) {
-    .btn-control {
-        cursor: url('@/assets/link.cur'), auto !important;
-    }
+// @media (prefers-color-scheme: dark) {
+.btn-control {
+    cursor: url('@/assets/link.cur'), auto !important;
 }
+
+// }
 </style>

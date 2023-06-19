@@ -42,9 +42,8 @@ const hexToStr = (index: number) => {
         <template v-for="(record, index) in outputStore.get" :key="index">
             <div class="my-2 chat" :class="record.type === 'output' ? 'chat-start' : 'chat-end'">
                 <div class="chat-header flex items-center">
-                    <div data-tip="点击在str与hex中切换" class="tooltip chat-header-encoding mr-2" v-if="record.type === 'input'">
-                        <span @click="strToHex(index)" v-if="outputStore.getEncoding(index) === 'str'"
-                            class="duration-1000">
+                    <div class="chat-header-encoding mr-2" v-if="record.type === 'input'">
+                        <span @click="strToHex(index)" v-if="outputStore.getEncoding(index) === 'str'">
                             str
                         </span>
                         <span @click="hexToStr(index)" v-else>hex</span>
@@ -52,9 +51,8 @@ const hexToStr = (index: number) => {
                     <time class="ml-1 text-xs opacity-50">
                         {{ "时间:" + record.time }}
                     </time>
-                    <div data-tip="点击在str与hex中切换" class="tooltip chat-header-encoding ml-2" v-if="record.type === 'output'">
-                        <span @click="strToHex(index)" v-if="outputStore.getEncoding(index) === 'str'"
-                            class="duration-1000">
+                    <div class="chat-header-encoding ml-2" v-if="record.type === 'output'">
+                        <span @click="strToHex(index)" v-if="outputStore.getEncoding(index) === 'str'">
                             str
                         </span>
                         <span @click="hexToStr(index)" v-else>hex</span>
@@ -91,15 +89,15 @@ const hexToStr = (index: number) => {
     @apply basis-3/4 border-solid border-2 rounded-xl p-2 overflow-y-auto scroll-smooth relative
 }
 
-@media (prefers-color-scheme: dark) {
-    .output-board {
+// @media (prefers-color-scheme: dark) {
+.output-board {
 
-        @apply border-gray-400
-    }
-
+    @apply border-gray-400
 }
 
 .chat-header-encoding {
     cursor: url('@/assets/link.cur'), auto;
 }
+
+// }
 </style>

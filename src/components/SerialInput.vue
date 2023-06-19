@@ -91,9 +91,10 @@ const send = async () => {
     height: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-    button {
-        cursor: url('@/assets/link.cur'), auto;
-    }
+// @media (prefers-color-scheme: dark) {
+button {
+    cursor: url('@/assets/link.cur'), auto;
 }
+
+// }
 </style>

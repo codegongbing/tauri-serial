@@ -172,117 +172,117 @@ const closeOrReconnectSerial = async () => {
   @apply flex justify-center
 }
 
-@media (prefers-color-scheme: light) {}
+// @media (prefers-color-scheme: light) {}
 
-@media (prefers-color-scheme: dark) {
-  .option-disabled {
-    cursor: url('@/assets/normal_simple.cur'), auto !important;
+// @media (prefers-color-scheme: dark) {
+.option-disabled {
+  cursor: url('@/assets/normal_simple.cur'), auto !important;
+}
+
+.serial-button {
+  @apply bg-gray-800 border-gray-400 border-[2px]
+}
+
+.serial-button:hover {
+  @apply bg-gray-800 border-gray-400
+}
+
+.serial-button:focus {
+  @apply bg-gray-800 border-gray-400 border-[2px]
+}
+
+.serial-button::after {
+  @apply bg-gray-800 border-gray-400 border-[2px]
+}
+
+.dark-aside {
+  @apply border-gray-400
+}
+
+.side-select {
+  :deep(.el-input__inner) {
+    @apply bg-dark-primary-color text-gray-400
   }
 
-  .serial-button {
-    @apply bg-gray-800 border-gray-400 border-[2px]
+  :deep(.el-input__suffix) {
+    @apply bg-dark-primary-color text-gray-400
   }
 
-  .serial-button:hover {
-    @apply bg-gray-800 border-gray-400
+  :deep(.el-input__wrapper) {
+    @apply rounded-md bg-dark-primary-color text-gray-400;
   }
 
-  .serial-button:focus {
-    @apply bg-gray-800 border-gray-400 border-[2px]
+
+  // 下拉时边框
+  :deep(.el-input.is-focus .el-input__wrapper) {
+    box-shadow: 0 0 0 3px #DCDFE5 !important;
   }
 
-  .serial-button::after {
-    @apply bg-gray-800 border-gray-400 border-[2px]
+  :deep(.el-input__wrapper.is-focus) {
+    box-shadow: 0 0 0 1px #DCDFE5 inset !important;
   }
 
-  .dark-aside {
-    @apply border-gray-400
+  :deep(.el-select-dropdown) {
+    @apply bg-dark-primary-color text-gray-400;
   }
 
-  .side-select {
-    :deep(.el-input__inner) {
-      @apply bg-dark-primary-color text-gray-400
-    }
-
-    :deep(.el-input__suffix) {
-      @apply bg-dark-primary-color text-gray-400
-    }
-
-    :deep(.el-input__wrapper) {
-      @apply rounded-md bg-dark-primary-color text-gray-400;
-    }
-
-
-    // 下拉时边框
-    :deep(.el-input.is-focus .el-input__wrapper) {
-      box-shadow: 0 0 0 3px #DCDFE5 !important;
-    }
-
-    :deep(.el-input__wrapper.is-focus) {
-      box-shadow: 0 0 0 1px #DCDFE5 inset !important;
-    }
-
-    :deep(.el-select-dropdown) {
-      @apply bg-dark-primary-color text-gray-400;
-    }
-
-    :deep(.el-select-dropdown__item) {
-      @apply bg-dark-primary-color text-gray-400;
-    }
-
-    :deep(.el-select-dropdown__item:hover) {
-      @apply text-gray-400 bg-dark-hover-color;
-    }
-
-    :deep(.el-popper.is-light .el-popper__arrow::before) {
-      @apply bg-dark-primary-color
-    }
-
-    :deep(.el-select-dropdown__item) {
-      cursor: url('@/assets/link.cur'), auto;
-    }
-
-    :deep(.el-select .el-input__inner) {
-      cursor: url('@/assets/link.cur'), auto !important;
-    }
+  :deep(.el-select-dropdown__item) {
+    @apply bg-dark-primary-color text-gray-400;
   }
 
-  .span-text {
+  :deep(.el-select-dropdown__item:hover) {
+    @apply text-gray-400 bg-dark-hover-color;
+  }
+
+  :deep(.el-popper.is-light .el-popper__arrow::before) {
+    @apply bg-dark-primary-color
+  }
+
+  :deep(.el-select-dropdown__item) {
+    cursor: url('@/assets/link.cur'), auto;
+  }
+
+  :deep(.el-select .el-input__inner) {
+    cursor: url('@/assets/link.cur'), auto !important;
+  }
+}
+
+.span-text {
+  @apply text-gray-400
+}
+
+.serial-dialog {
+  :deep(.el-dialog) {
+    @apply bg-[#262727] rounded-md border-[1px] border-gray-400
+  }
+
+  :deep(.el-dialog__header) {
+    @apply mr-0 text-center
+  }
+
+  :deep(.el-dialog__title) {
     @apply text-gray-400
   }
 
-  .serial-dialog {
-    :deep(.el-dialog) {
-      @apply bg-[#262727] rounded-md border-[1px] border-gray-400
-    }
-
-    :deep(.el-dialog__header) {
-      @apply mr-0 text-center
-    }
-
-    :deep(.el-dialog__title) {
-      @apply text-gray-400
-    }
-
-    :deep(.el-dialog__body) {
-      @apply pt-3 text-gray-400
-    }
-
-    :deep(.el-dialog__headerbtn .el-dialog__close) {
-      @apply text-gray-400
-    }
+  :deep(.el-dialog__body) {
+    @apply pt-3 text-gray-400
   }
 
-  .serial-select {
-    cursor: url('@/assets/link.cur'), auto;
-    @apply bg-gray-700 text-gray-400 rounded-md p-2 m-2
+  :deep(.el-dialog__headerbtn .el-dialog__close) {
+    @apply text-gray-400
   }
-
-  .suspend-btn {
-    cursor: url('@/assets/link.cur'), auto !important;
-  }
-
 }
+
+.serial-select {
+  cursor: url('@/assets/link.cur'), auto;
+  @apply bg-gray-700 text-gray-400 rounded-md p-2 m-2
+}
+
+.suspend-btn {
+  cursor: url('@/assets/link.cur'), auto !important;
+}
+
+// }
 </style>
 
 <style lang="scss"></style>
