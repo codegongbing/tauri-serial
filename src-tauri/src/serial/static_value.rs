@@ -17,5 +17,6 @@ lazy_static! {
         );
     pub static ref IS_SUSPENDED: Mutex<bool> = Mutex::new(false);
     pub static ref IS_WRITE: Mutex<bool> = Mutex::new(false);
+    pub static ref IS_HEX: Mutex<bool> = Mutex::new(false);
     pub static ref WRITE_DATA: Mutex<String> = Mutex::new(String::from(""));
 }

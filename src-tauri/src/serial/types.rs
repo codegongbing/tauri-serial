@@ -37,3 +37,9 @@ pub struct OutputData {
     pub data: String,
     pub is_suspended: bool,
 }
+
+#[derive(Clone, serde::Serialize, serde::Deserialize, Debug)]
+pub struct WriteData {
+    pub data: String,
+    pub is_hex: bool,
+}

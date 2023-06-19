@@ -2,6 +2,7 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import AutoSend from '@/components/AutoSend.vue'
 import { useDataStore, useEncodingStore } from '@/stores';
+import { WriteData } from '@/types/write-data';
 import Time from '@/utils/time';
 
 const outputStore = useDataStore()
@@ -17,13 +18,31 @@ const clearContent = () => {
 }
 
 const send = async () => {
+    let writeData;
+    let returnData;
+    if (encodingStore.writeEncoding === 'hex') {
+        writeData = inputRecord.value.split(' ').map((item) => {
+            return 'Ox' + item.toUpperCase()
+        }).join(', ')
+        returnData = inputRecord.value.replaceAll(" ", "")
+    } else {
+        writeData = inputRecord.value
+        returnData = inputRecord.value
+    }
     outputStore.addRecord({
         type: "input",
         encoding: encodingStore.writeEncoding,
         time: Time.getNowTime(),
-        data: inputRecord.value,
+        data: writeData,
     })
-    await invoke('change_write', { data: inputRecord.value })
+    await invoke('change_write',
+        {
+            data: {
+                data: returnData,
+                is_hex: encodingStore.writeEncoding === 'hex'
+            } as WriteData
+        }
+    )
 }
 
 </script>

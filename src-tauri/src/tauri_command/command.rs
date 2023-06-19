@@ -1,6 +1,7 @@
 use super::super::serial::{self, static_value::*, types::*};
+use hex;
 use serialport::{self, DataBits, Parity, StopBits};
-use std::{thread::spawn, time::Duration};
+use std::thread::spawn;
 use tauri::Window;
 
 // 向前端发送串口信息
@@ -61,7 +62,15 @@ pub fn choose_serial(serial: String, window: Window) {
                 if *IS_WRITE.lock().unwrap() == true {
                     if *IS_SUSPENDED.lock().unwrap() == false {
                         // 写入串口
-                        let write_result = port.write(WRITE_DATA.lock().unwrap().as_bytes());
+                        // let write_result = port.write(WRITE_DATA.lock().unwrap().as_bytes());
+                        let write_result = match *IS_HEX.lock().unwrap() {
+                            true => {
+                                let write_data =
+                                    hex::decode(WRITE_DATA.lock().unwrap().clone()).unwrap();
+                                port.write(write_data.as_slice())
+                            }
+                            false => port.write(WRITE_DATA.lock().unwrap().as_bytes()),
+                        };
                         match write_result {
                             Ok(_) => {}
                             Err(e) => {
@@ -108,7 +117,8 @@ pub fn close_or_reconnect_serial(state: bool) {
 }
 
 #[tauri::command]
-pub fn change_write(data: String) {
-    *WRITE_DATA.lock().unwrap() = data;
+pub fn change_write(data: WriteData) {
+    *IS_HEX.lock().unwrap() = data.is_hex;
+    *WRITE_DATA.lock().unwrap() = data.data;
     *IS_WRITE.lock().unwrap() = true;
 }
