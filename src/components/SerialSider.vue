@@ -5,11 +5,12 @@ import { serialEventData, serialPayload, outputEvent } from "@/types/event-data"
 import { SerialInfo } from "@/types/serial-info";
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen, once } from '@tauri-apps/api/event';
-import { useDataStore, useEncodingStore } from '@/stores';
+import { useDataStore, useEncodingStore, useBytesStore } from '@/stores';
 import Time from '@/utils/time';
 
 const outputStore = useDataStore();
 const encodingStore = useEncodingStore();
+const bytesStore = useBytesStore();
 
 const baudRates = [
   { value: '115200', label: '波特率:115200' },
@@ -87,6 +88,7 @@ const chooseSerial = async (index: number) => {
             return "0x" + item.charCodeAt(0).toString(16).toUpperCase()
           }).join(', ') : outputStore.emitData.data,
         })
+        bytesStore.rxLength += outputStore.emitData.data.length
       }
     }
   })

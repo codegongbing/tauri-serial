@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { invoke } from '@tauri-apps/api/tauri';
 import AutoSend from '@/components/AutoSend.vue'
-import { useDataStore, useEncodingStore } from '@/stores';
+import { useDataStore, useEncodingStore, useBytesStore } from '@/stores';
 import { WriteData } from '@/types/write-data';
 import Time from '@/utils/time';
 
 const outputStore = useDataStore()
 const encodingStore = useEncodingStore()
+const bytesStore = useBytesStore()
 const inputRecord = ref("")
 
 // 子组件
@@ -25,9 +26,13 @@ const send = async () => {
             return 'Ox' + item.toUpperCase()
         }).join(', ')
         returnData = inputRecord.value.replaceAll(" ", "")
+        bytesStore.txLength += writeData.split(' ').map((item) => {
+            return String.fromCharCode(parseInt(item, 16))
+        }).join('').length
     } else {
         writeData = inputRecord.value
         returnData = inputRecord.value
+        bytesStore.txLength += returnData.length
     }
     outputStore.addRecord({
         type: "input",

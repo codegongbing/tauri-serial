@@ -12,11 +12,11 @@ interface emitData {
 
 export const useDataStore = defineStore('output', () => {
     const emitData = ref({ data: '', is_suspended: false } as emitData)
-    const dataRecords = ref([] as OutputData[])
-    const get = computed(() => dataRecords.value)
-    const getEncoding = (index: number) => dataRecords.value[index].encoding
-    const dataLength = computed(() => dataRecords.value.length)
-    const clear = () => dataRecords.value = []
-    const addRecord = (record: OutputData) => dataRecords.value.push(record)
-    return { emitData, outputRecords: dataRecords, get, getEncoding, outputRecordLength: dataLength, clear, addRecord }
+    const outputRecords = ref([] as OutputData[])
+    const get = computed(() => outputRecords.value)
+    const getEncoding = (index: number) => outputRecords.value[index].encoding
+    const outputRecordsLength = computed(() => outputRecords.value.length)
+    const clear = () => outputRecords.value = []
+    const addRecord = (record: OutputData) => outputRecords.value.push(record)
+    return { emitData, outputRecords, get, getEncoding, outputRecordsLength, clear, addRecord }
 })

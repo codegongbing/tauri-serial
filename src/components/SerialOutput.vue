@@ -12,7 +12,7 @@ const scrollToBottom = () => {
         outputPanel.value.scrollTop = outputPanel.value.scrollHeight;
     }
 }
-watch(() => outputStore.outputRecordLength, () => {
+watch(() => outputStore.outputRecordsLength, () => {
     if (scrollStore.isScrolledToBottom) {
         setTimeout(() => scrollToBottom(), 0)
     }
