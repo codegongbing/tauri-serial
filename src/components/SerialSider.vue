@@ -245,6 +245,14 @@ const closeOrReconnectSerial = async () => {
   :deep(.el-select .el-input__inner) {
     cursor: url('@/assets/link.cur'), auto !important;
   }
+
+  :deep(.el-input__suffix-inner){
+    cursor: url('@/assets/link.cur'), auto !important;
+  }
+
+  :deep(.el-select .el-input .el-select__caret){
+    cursor: url('@/assets/link.cur'), auto !important;
+  }
 }
 
 .span-text {

@@ -75,7 +75,7 @@ const btnState = () => {
 <template>
     <div class="dropdown dropdown-top dropdown-end" :class="props.inputRecord === '' ? '' : 'dropdown-hover'"
         ref="autoSendRef">
-        <button class="btn btn-sm mb-1 mr-2 px-7" :class="btnState()" @click="toggleAutoSend">
+        <button class="autoSend-btn btn btn-sm mb-1 mr-2 px-7" :class="btnState()" @click="toggleAutoSend">
             {{ props.inputRecord === '' ? '自动发送' : content }}
         </button>
         <ul tabindex="0" class="dropdown-content p-3 shadow bg-base-200 rounded-box">
@@ -90,4 +90,8 @@ const btnState = () => {
     </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.autoSend-btn {
+    cursor: url('@/assets/link.cur'), auto;
+}
+</style>
