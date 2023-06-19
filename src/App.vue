@@ -14,7 +14,7 @@ const test = () => {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen w-screen overflow-hidden">
+  <div class="flex flex-col h-screen w-screen overflow-hidden" @contextmenu.prevent>
     <!--    <el-container class="container aspect-video flex flex-nowrap relative">-->
     <div class="p-5 h-screen flex flex-nowrap relative w-screen">
       <SerialSider></SerialSider>

@@ -201,7 +201,7 @@ const closeOrReconnectSerial = async () => {
 
 .side-select {
   :deep(.el-input__inner) {
-    @apply bg-dark-primary-color text-gray-400
+    @apply bg-dark-primary-color text-gray-400 select-none
   }
 
   :deep(.el-input__suffix) {
@@ -209,7 +209,7 @@ const closeOrReconnectSerial = async () => {
   }
 
   :deep(.el-input__wrapper) {
-    @apply rounded-md bg-dark-primary-color text-gray-400;
+    @apply rounded-md bg-dark-primary-color text-gray-400
   }
 
 
@@ -226,8 +226,12 @@ const closeOrReconnectSerial = async () => {
     @apply bg-dark-primary-color text-gray-400;
   }
 
+  :deep(.el-scrollbar__thumb){
+    display: none;
+  }
+
   :deep(.el-select-dropdown__item) {
-    @apply bg-dark-primary-color text-gray-400;
+    @apply bg-dark-primary-color text-gray-400 select-none;
   }
 
   :deep(.el-select-dropdown__item:hover) {
@@ -246,11 +250,11 @@ const closeOrReconnectSerial = async () => {
     cursor: url('@/assets/link.cur'), auto !important;
   }
 
-  :deep(.el-input__suffix-inner){
+  :deep(.el-input__suffix-inner) {
     cursor: url('@/assets/link.cur'), auto !important;
   }
 
-  :deep(.el-select .el-input .el-select__caret){
+  :deep(.el-select .el-input .el-select__caret) {
     cursor: url('@/assets/link.cur'), auto !important;
   }
 }
