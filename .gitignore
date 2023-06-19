@@ -31,3 +31,4 @@ dist
 yarn.lock
 .idea
 .cargo
+yarn-error.log
