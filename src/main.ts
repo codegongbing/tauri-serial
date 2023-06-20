@@ -5,10 +5,13 @@ import router, { setupRouter } from "./router";
 import './plugins/tailwindcss/tailwind.css'
 import './styles.scss'
 
-// @ts-ignore
-if (window.__TAURI__) {
-    document.body.style.cssText = 'zoom: 1.25;'
+if (/macintosh|mac os x/i.test(navigator.userAgent)) {
+    // @ts-ignore
+    if (window.__TAURI__) {
+        document.body.style.cssText = 'zoom: 1.25;'
+    }
 }
+
 const app = createApp(App)
 setupPlugins(app)
 setupRouter(app)
